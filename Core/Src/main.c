@@ -268,9 +268,6 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
-
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -289,13 +286,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PB1 PB13 PB14 PB15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
@@ -316,26 +306,59 @@ void StartButtonControl(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	if(HAL_GPIO_ReadPin(GPIOC, B0_Pin))
-	{
+    if(isReading)
+    {
+      for(int i = 0; i<gameLevel && isReading;)
+      {
+        if(HAL_GPIO_ReadPin(GPIOC, B0_Pin))
+        {
+            if(game[i]!=4)
+            {
+              isReading = 0;
+              gameLevel = 1;
+            }
+            else i++;
+            while (HAL_GPIO_ReadPin(GPIOC, B0_Pin)){}
+        }
+        else if(HAL_GPIO_ReadPin(GPIOC, B1_Pin))
+        {
+            if(game[i]!=3)
+            {
+              isReading = 0;
+              gameLevel = 1;
+            }
+            else i++;
+            while (HAL_GPIO_ReadPin(GPIOC, B1_Pin)){}
+        }
+        else if(HAL_GPIO_ReadPin(GPIOC, B2_Pin))
+        {
+            if(game[i]!=2)
+            {
+              isReading = 0;
+              gameLevel = 1;
+            }
+            else i++;
+            while (HAL_GPIO_ReadPin(GPIOC, B2_Pin)){}
+        }
+        else if(HAL_GPIO_ReadPin(GPIOC, B3_Pin))
+        {
+            if(game[i]!=1)
+            {
+              isReading = 0;
+              gameLevel = 1;
+            }
+            else i++;
+            while (HAL_GPIO_ReadPin(GPIOC, B3_Pin)){}
+        }
+        else{}        
 
-	}
-	else if(HAL_GPIO_ReadPin(GPIOC, B1_Pin))
-	{
-
-	}
-	else if(HAL_GPIO_ReadPin(GPIOC, B2_Pin))
-	{
-
-	}
-	else if(HAL_GPIO_ReadPin(GPIOC, B3_Pin))
-	{
-
-	}
-	else{}
-	//sprintf(msg,"task01");
-	//HAL_UART_Transmit(&huart2, (uint8_t *) msg, 30, 10);
-    osDelay(500);
+        if(i==gameLevel)
+        {
+          isReading = 0;
+          gameLevel++;
+        }
+      }
+    }
   }
   /* USER CODE END 5 */
 }
