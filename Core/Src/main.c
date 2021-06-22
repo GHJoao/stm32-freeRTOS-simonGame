@@ -66,6 +66,9 @@ const osThreadAttr_t serialControl_attributes = {
 };
 /* USER CODE BEGIN PV */
 uint8_t msg[30];
+uint8_t game[] = {1, 4, 3, 2, 3, 1, 4, 3, 2, 1, 4, 2, 3, 4, 2};
+uint8_t isReading = 0;
+uint8_t gameLevel = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -315,6 +318,9 @@ void StartLedControl(void *argument)
 {
   /* USER CODE BEGIN StartLedControl */
   /* Infinite loop */
+  if (isReading == 0){
+    
+  }
   for(;;)
   {
     osDelay(1);
