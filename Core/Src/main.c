@@ -374,11 +374,37 @@ void StartLedControl(void *argument)
 {
   /* USER CODE BEGIN StartLedControl */
   /* Infinite loop */
-  if (isReading == 0){
-    
-  }
   for(;;)
   {
+    if (isReading == 0){
+      for(int i i=0;i<gameLevel;i++){
+        HAL_GPIO_WritePin(GPIOB, 13, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, 14, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, 15, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, 1, GPIO_PIN_RESET);
+        switch (game[i])
+        {
+        case 1:
+          HAL_GPIO_WritePin(GPIOB, 13, GPIO_PIN_SET);
+          break;
+        case 2:
+          HAL_GPIO_WritePin(GPIOB, 14, GPIO_PIN_SET);
+          break;
+        case 3:
+          HAL_GPIO_WritePin(GPIOB, 15, GPIO_PIN_SET);
+          break;
+        case 4:
+          HAL_GPIO_WritePin(GPIOB, 1, GPIO_PIN_SET);
+          break;
+        }
+        osDelay(1000);
+      }
+      HAL_GPIO_WritePin(GPIOB, 13, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, 14, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, 15, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, 1, GPIO_PIN_RESET);
+      isReading=1;
+    }
     osDelay(1);
   }
   /* USER CODE END StartLedControl */
