@@ -377,7 +377,7 @@ void StartLedControl(void *argument)
   for(;;)
   {
     if (isReading == 0){
-      for(int i i=0;i<gameLevel;i++){
+      for(int i=0;i<gameLevel;i++){
         HAL_GPIO_WritePin(GPIOB, 13, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GPIOB, 14, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GPIOB, 15, GPIO_PIN_RESET);
