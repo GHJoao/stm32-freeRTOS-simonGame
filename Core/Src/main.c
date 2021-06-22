@@ -43,17 +43,24 @@
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart2;
 
-/* Definitions for testTask01 */
-osThreadId_t testTask01Handle;
-const osThreadAttr_t testTask01_attributes = {
-  .name = "testTask01",
+/* Definitions for buttonControl */
+osThreadId_t buttonControlHandle;
+const osThreadAttr_t buttonControl_attributes = {
+  .name = "buttonControl",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for testTask02 */
-osThreadId_t testTask02Handle;
-const osThreadAttr_t testTask02_attributes = {
-  .name = "testTask02",
+/* Definitions for ledControl */
+osThreadId_t ledControlHandle;
+const osThreadAttr_t ledControl_attributes = {
+  .name = "ledControl",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for serialControl */
+osThreadId_t serialControlHandle;
+const osThreadAttr_t serialControl_attributes = {
+  .name = "serialControl",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -65,8 +72,9 @@ uint8_t msg[30];
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-void StartTestTask01(void *argument);
-void StartTestTask02(void *argument);
+void StartButtonControl(void *argument);
+void StartLedControl(void *argument);
+void StartSerialControl(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -130,11 +138,14 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of testTask01 */
-  testTask01Handle = osThreadNew(StartTestTask01, NULL, &testTask01_attributes);
+  /* creation of buttonControl */
+  buttonControlHandle = osThreadNew(StartButtonControl, NULL, &buttonControl_attributes);
 
-  /* creation of testTask02 */
-  testTask02Handle = osThreadNew(StartTestTask02, NULL, &testTask02_attributes);
+  /* creation of ledControl */
+  ledControlHandle = osThreadNew(StartLedControl, NULL, &ledControl_attributes);
+
+  /* creation of serialControl */
+  serialControlHandle = osThreadNew(StartSerialControl, NULL, &serialControl_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -273,14 +284,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartTestTask01 */
+/* USER CODE BEGIN Header_StartButtonControl */
 /**
-  * @brief  Function implementing the testTask01 thread.
+  * @brief  Function implementing the buttonControl thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartTestTask01 */
-void StartTestTask01(void *argument)
+/* USER CODE END Header_StartButtonControl */
+void StartButtonControl(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -293,24 +304,40 @@ void StartTestTask01(void *argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_StartTestTask02 */
+/* USER CODE BEGIN Header_StartLedControl */
 /**
-* @brief Function implementing the testTask02 thread.
+* @brief Function implementing the ledControl thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartTestTask02 */
-void StartTestTask02(void *argument)
+/* USER CODE END Header_StartLedControl */
+void StartLedControl(void *argument)
 {
-  /* USER CODE BEGIN StartTestTask02 */
+  /* USER CODE BEGIN StartLedControl */
   /* Infinite loop */
   for(;;)
   {
-	  sprintf(msg,"task02");
-	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, 30, 10);
-    osDelay(500);
+    osDelay(1);
   }
-  /* USER CODE END StartTestTask02 */
+  /* USER CODE END StartLedControl */
+}
+
+/* USER CODE BEGIN Header_StartSerialControl */
+/**
+* @brief Function implementing the serialControl thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartSerialControl */
+void StartSerialControl(void *argument)
+{
+  /* USER CODE BEGIN StartSerialControl */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartSerialControl */
 }
 
  /**
