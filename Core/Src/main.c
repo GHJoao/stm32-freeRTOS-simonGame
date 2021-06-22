@@ -268,14 +268,17 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, LED4_Pin|LED1_Pin|LED2_Pin|LED3_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : B0_Pin B1C1_Pin B2_Pin B3_Pin */
-  GPIO_InitStruct.Pin = B0_Pin|B1C1_Pin|B2_Pin|B3_Pin;
+  /*Configure GPIO pins : BOT1_Pin BOT2_Pin BOT3_Pin BOT4_Pin */
+  GPIO_InitStruct.Pin = BOT1_Pin|BOT2_Pin|BOT3_Pin|BOT4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -286,6 +289,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LED4_Pin LED1_Pin LED2_Pin LED3_Pin */
+  GPIO_InitStruct.Pin = LED4_Pin|LED1_Pin|LED2_Pin|LED3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
@@ -310,7 +320,7 @@ void StartButtonControl(void *argument)
     {
       for(int i = 0; i<gameLevel && isReading;)
       {
-        if(HAL_GPIO_ReadPin(GPIOC, B0_Pin))
+        if(HAL_GPIO_ReadPin(GPIOC, BOT1_Pin))
         {
             if(game[i]!=4)
             {
@@ -318,9 +328,9 @@ void StartButtonControl(void *argument)
               gameLevel = 1;
             }
             else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, B0_Pin)){}
+            while (HAL_GPIO_ReadPin(GPIOC, BOT1_Pin)){}
         }
-        else if(HAL_GPIO_ReadPin(GPIOC, B1_Pin))
+        else if(HAL_GPIO_ReadPin(GPIOC, BOT2_Pin))
         {
             if(game[i]!=3)
             {
@@ -328,9 +338,9 @@ void StartButtonControl(void *argument)
               gameLevel = 1;
             }
             else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, B1_Pin)){}
+            while (HAL_GPIO_ReadPin(GPIOC, BOT2_Pin)){}
         }
-        else if(HAL_GPIO_ReadPin(GPIOC, B2_Pin))
+        else if(HAL_GPIO_ReadPin(GPIOC, BOT3_Pin))
         {
             if(game[i]!=2)
             {
@@ -338,9 +348,9 @@ void StartButtonControl(void *argument)
               gameLevel = 1;
             }
             else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, B2_Pin)){}
+            while (HAL_GPIO_ReadPin(GPIOC, BOT3_Pin)){}
         }
-        else if(HAL_GPIO_ReadPin(GPIOC, B3_Pin))
+        else if(HAL_GPIO_ReadPin(GPIOC, BOT4_Pin))
         {
             if(game[i]!=1)
             {
@@ -348,7 +358,7 @@ void StartButtonControl(void *argument)
               gameLevel = 1;
             }
             else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, B3_Pin)){}
+            while (HAL_GPIO_ReadPin(GPIOC, BOT4_Pin)){}
         }
         else{}        
 
@@ -378,31 +388,31 @@ void StartLedControl(void *argument)
   {
     if (isReading == 0){
       for(int i=0;i<gameLevel;i++){
-        HAL_GPIO_WritePin(GPIOB, 13, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB, 14, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB, 15, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB, 1, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_RESET);
         switch (game[i])
         {
         case 1:
-          HAL_GPIO_WritePin(GPIOB, 13, GPIO_PIN_SET);
+          HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_SET);
           break;
         case 2:
-          HAL_GPIO_WritePin(GPIOB, 14, GPIO_PIN_SET);
+          HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_SET);
           break;
         case 3:
-          HAL_GPIO_WritePin(GPIOB, 15, GPIO_PIN_SET);
+          HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_SET);
           break;
         case 4:
-          HAL_GPIO_WritePin(GPIOB, 1, GPIO_PIN_SET);
+          HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_SET);
           break;
         }
         osDelay(1000);
       }
-      HAL_GPIO_WritePin(GPIOB, 13, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOB, 14, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOB, 15, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOB, 1, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_RESET);
       isReading=1;
     }
     osDelay(1);
