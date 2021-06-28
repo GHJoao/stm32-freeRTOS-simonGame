@@ -33,6 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MAX_LEVEL 5
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -65,7 +66,7 @@ const osThreadAttr_t serialControl_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-uint8_t msg[30];
+uint8_t msg[100];
 uint8_t game[] = {1, 4, 3, 2, 3, 1, 4, 3, 2, 1, 4, 2, 3, 4, 2};
 uint8_t isReading = 0;
 uint8_t gameLevel = 1;
@@ -313,61 +314,52 @@ static void MX_GPIO_Init(void)
 void StartButtonControl(void *argument)
 {
   /* USER CODE BEGIN 5 */
+  int wrongSequence;
   /* Infinite loop */
   for(;;)
   {
     if(isReading)
     {
-      for(int i = 0; i<gameLevel && isReading;)
+      wrongSequence = 0;
+      for(int i = 0; i<gameLevel && !wrongSequence && gameLevel!=MAX_LEVEL+1;)
       {
         if(HAL_GPIO_ReadPin(GPIOC, BOT1_Pin))
         {
             if(game[i]!=4)
-            {
-              isReading = 0;
-              gameLevel = 1;
-            }
-            else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, BOT1_Pin)){}
+            	wrongSequence = 1;
+            else
+            	i++;
+            while (HAL_GPIO_ReadPin(GPIOC, BOT1_Pin)){osDelay(30);}
         }
         else if(HAL_GPIO_ReadPin(GPIOC, BOT2_Pin))
         {
             if(game[i]!=3)
-            {
-              isReading = 0;
-              gameLevel = 1;
-            }
-            else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, BOT2_Pin)){}
+            	wrongSequence = 1;
+            else
+            	i++;
+            while (HAL_GPIO_ReadPin(GPIOC, BOT2_Pin)){osDelay(30);}
         }
         else if(HAL_GPIO_ReadPin(GPIOC, BOT3_Pin))
         {
             if(game[i]!=2)
-            {
-              isReading = 0;
-              gameLevel = 1;
-            }
-            else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, BOT3_Pin)){}
+            	wrongSequence = 1;
+            else
+            	i++;
+            while (HAL_GPIO_ReadPin(GPIOC, BOT3_Pin)){osDelay(30);}
         }
         else if(HAL_GPIO_ReadPin(GPIOC, BOT4_Pin))
         {
             if(game[i]!=1)
-            {
-              isReading = 0;
-              gameLevel = 1;
-            }
-            else i++;
-            while (HAL_GPIO_ReadPin(GPIOC, BOT4_Pin)){}
+            	wrongSequence = 1;
+            else
+            	i++;
+            while (HAL_GPIO_ReadPin(GPIOC, BOT4_Pin)){osDelay(30);}
         }
-        else{}        
-
-        if(i==gameLevel)
-        {
-          isReading = 0;
-          gameLevel++;
-        }
+        else{osDelay(30);}
       }
+      gameLevel = wrongSequence ? 1 : (gameLevel+1);
+      isReading = 0;
+      osDelay(1);
     }
   }
   /* USER CODE END 5 */
@@ -386,34 +378,45 @@ void StartLedControl(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    if (isReading == 0){
-      for(int i=0;i<gameLevel;i++){
-        HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_RESET);
-        switch (game[i])
-        {
-        case 1:
-          HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_SET);
-          break;
-        case 2:
-          HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_SET);
-          break;
-        case 3:
-          HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_SET);
-          break;
-        case 4:
-          HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_SET);
-          break;
-        }
-        osDelay(1000);
+    if (!isReading){
+      if(gameLevel!=MAX_LEVEL+1)
+      {
+          for(int x=0;x<gameLevel;x++){
+            HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_RESET);
+            switch (game[x])
+            {
+            case 1:
+              HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_SET);
+              break;
+            case 2:
+              HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_SET);
+              break;
+            case 3:
+              HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_SET);
+              break;
+            case 4:
+              HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_SET);
+              break;
+            }
+            osDelay(1000);
+          }
+          HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_RESET);
+          HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_RESET);
+          HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_RESET);
+          HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_RESET);
+          isReading=1;
       }
-      HAL_GPIO_WritePin(GPIOB, LED1_Pin, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOB, LED2_Pin, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOB, LED3_Pin, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOB, LED4_Pin, GPIO_PIN_RESET);
-      isReading=1;
+      else
+      {
+    	  HAL_GPIO_TogglePin(GPIOB, LED1_Pin);
+    	  HAL_GPIO_TogglePin(GPIOB, LED2_Pin);
+    	  HAL_GPIO_TogglePin(GPIOB, LED3_Pin);
+    	  HAL_GPIO_TogglePin(GPIOB, LED4_Pin);
+          osDelay(500);
+      }
     }
     osDelay(1);
   }
@@ -430,9 +433,24 @@ void StartLedControl(void *argument)
 void StartSerialControl(void *argument)
 {
   /* USER CODE BEGIN StartSerialControl */
+  int level = 0;
   /* Infinite loop */
   for(;;)
   {
+	if(level!=gameLevel)
+	{
+		if(gameLevel!=MAX_LEVEL+1)
+		{
+			sprintf((char *) msg, "Dificuldade: %d\r\n", gameLevel);
+			HAL_UART_Transmit(&huart2, msg, strlen((const char *)msg), 10);
+		}
+		else
+		{
+			sprintf((char *) msg, "PARAB%cNS! Voc%c ganhou. Pressione Reset para iniciar um novo jogo.\r\n",144,136);
+			HAL_UART_Transmit(&huart2, msg, strlen((const char *)msg), 10);
+		}
+		level = gameLevel;
+	}
     osDelay(1);
   }
   /* USER CODE END StartSerialControl */
